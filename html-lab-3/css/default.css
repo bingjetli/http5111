@@ -1,0 +1,93 @@
+* {
+    box-sizing: border-box;
+    background-color: ghostwhite;
+}
+
+body {
+    color: darkslategray;
+}
+
+p, li, label, input, button {
+    font-family: Helvetica, sans-serif;
+    line-height: 1.5;
+}
+
+h1 {
+    font-family: Tahoma, sans-serif;
+    font-weight: normal;
+    font-size: 2.5em;
+}
+
+h2 {
+    font-family: Tahoma, sans-serif;
+    font-weight: normal;
+    font-size: 1.25em;
+    text-transform: uppercase;
+}
+
+code {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: lightsteelblue;
+    padding: 0.125em 0.25em;
+    border-radius: 0.125em;
+    color: #303030;
+}
+
+.codeblock {
+    background-color: lightsteelblue;
+    padding: 1em;
+    border-radius: 0.125em;
+}
+
+a {
+    font-family: Helvetica, sans-serif;
+    color: slategrey;
+}
+
+a:hover {
+    color: lightseagreen;
+}
+
+input {
+    background-color: white;
+    padding: 0.5em 1em;
+    border-radius: 100em;
+    border: none;
+}
+
+button {
+    display: block;
+    border: none;
+    border-radius: 0.25em;
+    padding:0.5em 1em;
+    background-color: lightseagreen;
+    color: white;
+    text-transform: uppercase;
+    margin: 0.5em auto;
+}
+
+#main {
+    max-width: 45em;
+    margin: 0 auto;
+}
+
+#footer {
+    max-width: 18.5em;
+    margin: 0 auto;
+    padding: 1em;
+}
+
+form {
+    margin: 0 auto;
+    display: inline-block;
+}
+
+#comments {
+    padding: 1em;
+    border-top: 1px solid darkslategray;
+    border-bottom: 1px solid darkslategray;
+}
+
+#author {
+    padding: 1em;
+}

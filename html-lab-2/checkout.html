@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Fake store checkout</title>
+    </head>
+    <body>
+        <header>
+            <h2><a href="#">Fake Store</a></h2>
+            <ul>
+                <li><a href="#">Account</a></li>
+                <li><a href="#">Cart</a></li>
+            </ul>
+        </header>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Shop</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <main>
+            <form action="#">
+                <h1>Checkout Order #1234 - Billing and Payment</h1>
+                <p>Order total : $129.57</p>
+                <fieldset>
+                    <legend>Billing Information</legend>
+                    <div>
+                        <label for="first-name">First name: </label>
+                        <input type="text" 
+                            id="first-name" 
+                            name="first-name"
+                            placeholder="John">
+
+                        <label for="last-name">Last name: </label>
+                        <input type="text"
+                            id="last-name" 
+                            name="last-name"
+                            placeholder="Doe">
+                    </div>
+                    <div>
+                        <label for="address">Address: </label>
+                        <input type="text" 
+                            id="address" 
+                            name="address"
+                            placeholder="123 Fake Street">
+                    </div>
+                    <div>
+                        <label for="city">City: </label>
+                        <input type="text"
+                            id="city"
+                            name="city"
+                            placeholder="Toronto">
+                        
+                        <label for="province"></label>
+                        <select id="province" name="province">
+                            <option value="">---Choose Province---</option>
+                            <option value="NB">New Brunswick</option>
+                            <option value="ON">Ontario</option>
+                            <option value="QC">Quebec</option>
+                        </select>
+
+                        <label for="postal-code">Postal code: </label>
+                        <input type="text"
+                            id="postal-code"
+                            name="postal-code"
+                            placeholder="A1A 1A1">
+                    </div>
+                    <div>
+                        <label for="phone-number">Phone number: </label>
+                        <input type="tel"
+                            id="phone-number"
+                            name="phone-number"
+                            placeholder="555-555-5555">
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Payment information</legend>
+
+                    <fieldset>
+                        <legend>Choose card</legend>
+                        <div>
+                            <input type="radio"
+                                id="mastercard-radio"
+                                name="payment"
+                                value="mastercard"
+                                checked>
+                            <label for="mastercard-radio">MasterCard</label>
+                        </div>
+                        
+                        <div>
+                            <input type="radio"
+                                id="visa-radio"
+                                name="payment"
+                                value="visa">
+                            <label for="visa-radio">Visa</label>
+                        </div>
+                    </fieldset>
+
+                    <div>
+                        <label for="card-number-text">Card number: </label>
+                        <input type="text"
+                            inputmode="numeric"
+                            pattern="[0-9]{4} [0-9]{4} [0-9]{4} [0-9]{4}"
+                            id="card-number-text"
+                            name="card-number"
+                            placeholder="1234 1234 1234 1234">
+                    </div>
+
+                    <div>
+                        <label for="card-expiry-text">Card expiry: </label>
+                        <input type="text"
+                            id="card-expiry-text"
+                            name="card-expiry"
+                            placeholder="MM/YY">
+                    </div>
+                </fieldset>
+
+                <input type="submit" value="Pay now">
+
+            </form>
+        </main>
+        <footer>
+            <p>&copy; Copyright HTTP5111, 2023</p>
+        </footer>
+    </body>
+</html>

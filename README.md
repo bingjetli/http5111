@@ -1,2 +1,2 @@
-# http5111
-web development 1
+# HTTP-5111 : Web Development 1
+A repository to store all notes and related files for this class.
