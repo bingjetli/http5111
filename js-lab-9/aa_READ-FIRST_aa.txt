@@ -1,0 +1,18 @@
+Hi There!
+Cookies and AJAX typically interact with an online web server.
+To run these exercises and labs, it is best to use your online hosting for these files.
+If you do not have online hosting, use one of the two options below.
+
+========== SERVE THESE FILES FROM A WEB SERVER, EITHER ONLINE HOSTING OR THROUGH A LOCAL SERVER. =====
+
+== ONLINE HOSTING ==
+1. FTP these files to your hosting.
+2. As you work, save your files and upload the newly saved versions.
+3. Refresh your browser.
+
+== THROUGH A LOCAL SERVER ==
+You can use Apache if you have it installed, but the simplest way is through VS Code.
+TO RUN THESE FILES ON A LOCAL SERVER WITH VS CODE...
+1. With VS Code open, use the explorer to select the folder with the lab/demo files.
+2. Select one of the HTML files, then click Go Live in the blue bottom info bar.
+See https://github.com/ritwickdey/vscode-live-server
