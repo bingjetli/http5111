@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="styles.css" type="text/css">
+  <script defer src="main.js"></script>
+</head>
+<body>
+  <header id="header" class="flex-row drop-shadow">
+
+    <div>
+
+      <a href="#" class="logo-font" id="header-logo">BL_</a>
+      <div id="mobile-menu">
+        <svg viewBox="0 0 100 60" width="40" height="40">
+          <rect y="0" width="100" height="15"></rect>
+          <rect y="30" width="100" height="15"></rect>
+          <rect y="60" width="100" height="15"></rect>
+        </svg>
+      </div>
+
+    </div>
+
+    <nav id="navlinks" class="flex-row-hcentered full-width">
+      <a href="#" class="link-font">Home</a>
+      <a href="#" class="link-font">Portfolio</a>
+      <a href="#" class="link-font">Blog</a>
+    </nav>
+  </header>
+  <main>
+    <section id="greeting-section" class="flex-row-vcentered">
+      <div>
+        <h1 class="title-font">Welcome!</h1>
+        <p class="body-font">
+          My name is Bailey Liang, and I’m a web developer. From here, you can get to know who I am, view a few of my noteworthy projects and find ways to reach out to me if needed. Hope you enjoy your stay and have a great day!
+        </p>
+      </div>
+      <img src="images/profile.png" alt="profile-picture">
+    </section>
+
+    <section id="aboutme-section" class="flex-row-vstretched">
+      <pre class="faux-console-font">
+root@baileyliang:~$ load about-me-section
+Loading ‘about-me-section’...100%
+Preparing environment...100%
+Setting up styles...100%
+Fetching content...100%
+      
+                                 __
+                                |  \__
+--------------------------------|     \__
+                                         \__
+Section: About Me - LOADED                __|
+                                       __/
+--------------------------------|   __/
+                                |__/
+      
+      
+root@baileyliang:~$
+      </pre>
+      <div>
+        <h2 class="title-font">About Me</h2>
+        <p class="body-font">
+          Born in the tropical Caribbean country of Belize, I’ve been interested in software development ever since I was a teenager in high school. 
+        </p>
+
+        <p class="body-font">
+          I started off learning how to make flash games with Actionscript 2.0, later transitioning into the C-like scripting language known as Pawn. From there I branched off into several other programming languages such as C, C++, Java, Python, Javascript and so on.
+        </p>
+
+        <p class="body-font">
+          I have a growing interest in machine learning and artificial intelligence, particularly when it comes to computer vision and generative AI.
+        </p>
+
+        <p class="body-font">
+          Outside of software development, I also like to optimize for fitness, health and personal development.
+        </p>
+      </div>
+    </section>
+
+    <section id="projects-section" class="">
+      <h2 class="alt-font">Here's a quick overview of my notable projects!</h2>
+      <div id="projects-div" class="flex-row">
+        <div>
+          <h3 class="title-font"><a href="#">VU Restaurant Reservation System</a></h3>
+          <p class="body-font">A full-stack restaurant reservation system created for VU Restaurants. The frontend is powered by React-Native and the Expo-CLI. The backend is a REST-API built using Node.JS, Express.JS and MongoDB.</p>
+        </div>
+        <div>
+          <h3 class="title-font"><a href="#">International Height Visualizer</a></h3>
+          <p class="body-font">A visual comparison of the average heights of both males and females in each country using a Kaggle dataset. This project uses Node.JS, Express.JS and JQuery.</p>
+        </div>
+        <div>
+          <h3 class="title-font"><a href="#">Modal Reader Chromium Extension</a></h3>
+          <p class="body-font">A chromium extension I built to help me read large blocks of programming documentation. It uses principles of typography and design to optimize the overall reading experience.</p>
+        </div>
+      </div>
+      <h4 class="alt-font">More details can be found on my <a href="#">Portfolio!</a></h4>
+    </section>
+
+    <section id="contact-section" class="flex-row-vcentered">
+      <div>
+        <h2 class="title-font">Contact Me</h2>
+        <p class="body-font">Want to get in touch? Go ahead and fill out the contact form! It sends  an email directly to me where I can reach out from within 1-3 business days.</p>
+      </div>
+
+
+      <form id="contact-form" class="flex-col-hstretched">
+        <div class="full-width flex-row">
+          <div class="flex-col-hstretched full-width">
+            <label for="first-name" class="caption-font">First Name: </label>
+            <input 
+              id="first-name"
+              type="text" 
+              name="first-name" 
+              placeholder="John"
+              required>
+          </div>
+          <div class="flex-col-hstretched full-width">
+            <label for="last-name" class="caption-font">Last Name: </label>
+            <input 
+              id="last-name"
+              type="text" 
+              name="last-name" 
+              placeholder="Doe"
+              required>
+          </div>
+        </div>
+
+        <label for="email" class="caption-font">Email Address: </label>
+        <input 
+          id="email"
+          type="email" 
+          name="email" 
+          placeholder="johndoe@email.com"
+          required>
+
+        <label for="message" class="caption-font">Message: </label>
+        <textarea 
+          id="message"
+          name="message" 
+          rows="5" 
+          placeholder="Hi, ..."
+          required></textarea>
+
+        <div class="full-width flex-row-hcentered">
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+
+    </section>
+
+  </main>
+  <footer class="flex-col-hcentered">
+    <p>Copyright 2023 Bailey Liang. All Rights Reserved.</p>
+    <p><a href="#">Privacy Policy</a></p>
+    <p><a href="#">Terms of Use</a></p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,159 @@
+html {
+  box-sizing: border-box;
+}
+
+body {
+  margin:0;
+  padding: 0;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+#viewport {
+  background-color: black;
+  min-height: 500px;
+  max-height: 500px;
+  overflow: hidden;
+
+  animation-name: viewport-color;
+  animation-duration: 5000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+#ball {
+  background-color: chartreuse;
+  box-shadow: 0 0 20px 3px #ff06;
+  display: inline-block;
+  min-height: 100px;
+  min-width: 100px;
+  border-radius: 50px;
+
+  float: right;
+
+  animation-name: ball-color;
+  animation-duration: 5000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+#ball-container {
+  display: inline-block;
+  min-width: min(50vh, 50vw);
+  max-width: min(50vh, 50vw);
+  position: relative;
+  top: 500px;
+  left: 50vw;
+
+  transform-origin: left center;
+
+  animation-name: ball-container-rotate, 
+    ball-container-width;
+  animation-duration: 5000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes ball-container-rotate {
+  0% {
+    rotate: 0deg;
+  }
+
+  100% {
+    rotate: -180deg;
+  }
+}
+
+@keyframes ball-container-width {
+  0% {
+    max-width: calc(50vw - 100px);
+    min-width: calc(50vw - 100px);
+  }
+
+  40% {
+    max-width: 550px;
+    min-width: 550px;
+  }
+
+  60% {
+    max-width: 550px;
+    min-width: 550px;
+  }
+
+  100% {
+    max-width: calc(50vw - 100px);
+    min-width: calc(50vw - 100px);
+  }
+}
+
+@keyframes viewport-color {
+  0% {
+    background-color: #1c1341;
+  }
+
+  50% {
+    background-color: skyblue;
+  }
+
+  66% {
+    background-color: darkorange;
+  }
+
+  75% {
+    background-color: crimson;
+  }
+
+  100% {
+    background-color: #1c1341;
+  }
+}
+
+@keyframes ball-color {
+  0% {
+    background-color: red;
+  }
+
+  25% {
+    background-color: yellow;
+  }
+
+  75% {
+    background-color: orange;
+  }
+
+  100% {
+    background-color: red;
+  }
+}
+
+.paused {
+  animation-play-state: paused;
+}
+
+.flex-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#play-state-toggle {
+  background-color: hsl(207, 44%, 49%);
+  font-size: 2em;
+  font-family: monospace;
+  text-transform: uppercase;
+  color: white;
+  padding: 1em 2em;
+  border: none;
+  margin: auto;
+  cursor: pointer;
+}
+
+#play-state-toggle:hover {
+  background-color: hsl(207, 44%, 66%);
+}
+
+#play-state-toggle:active {
+  background-color: hsl(207, 44%, 40%);
+}

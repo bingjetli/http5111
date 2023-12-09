@@ -1,0 +1,488 @@
+/*Globals and resets*/
+:root {
+  --bg: #fff;
+  --faux-code-bg: #5B334D;
+  --primary: #335B41;
+  --primary-highlighted: #4b7;
+  --primary-bg-accent:#efe;
+  --text: #000;
+  --text-alt: #fff;
+  --one-col: 8.33vw;
+  --two-col: 16.66vw;
+  --three-col: 25vw;
+  --four-col: 33vw;
+  --five-col: 41.66vw;
+  --six-col: 50vw;
+  --seven-col: 58.33vw;
+  --eight-col: 66.66vw;
+  --nine-col: 75vw;
+  --ten-col: 83.33vw;
+  --eleven-col: 91.66vw;
+  --divider: #ccc;
+  --box-roundness: 10px;
+  --vertical-space: 116px;
+  --vertical-space-tablet: 50px;
+}
+
+@font-face {
+  font-family: openSansRegular;
+  src: url(fonts/open-sans/static/OpenSans-Regular.ttf);
+}
+
+@font-face {
+  font-family: playfairDisplayScRegular;
+  src: url(fonts/playfair-dislplay-sc/PlayfairDisplaySC-Regular.ttf);
+}
+
+@font-face {
+  font-family: martelRegular;
+  src: url(fonts/martel/Martel-Regular.ttf);
+}
+
+@font-face {
+  font-family: yesevaOneRegular;
+  src: url(fonts/yeseva-one/YesevaOne-Regular.ttf);
+}
+
+@font-face {
+  font-family: montserratRegular;
+  src: url(fonts/montserrat/static/Montserrat-Regular.ttf);
+}
+
+@font-face {
+  font-family: firaMonoRegular;
+  src: url(fonts/fira-mono/FiraMono-Regular.ttf);
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/*Reuseable*/
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-row-hcentered {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.flex-row-vcentered {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-row-vstretched {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.flex-col-vcentered {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.flex-col-hcentered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flex-col-hstretched {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.logo-font {
+  font-family: 'playfairDisplayScRegular';
+  font-size: 36px;
+  font-weight: normal;
+}
+
+.link-font {
+  font-family: 'openSansRegular';
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.body-font {
+  font-family: 'martelRegular';
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.title-font {
+  font-family: 'yesevaOneRegular';
+  font-size: 36px;
+  font-weight: normal;
+}
+
+.alt-font {
+  font-family: 'montserratRegular';
+  font-size: 36px;
+  font-weight: normal;
+}
+
+.caption-font {
+  font-family: 'firaMonoRegular';
+  font-size: 10px;
+  font-weight: normal;
+}
+
+.faux-console-font {
+  font-family: 'firaMonoRegular';
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.drop-shadow {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+button {
+  text-transform: uppercase;
+  background-color: var(--primary);
+  padding: 2em 4em;
+  font-family: 'firaMonoRegular';
+  font-size: 1em;
+  border: none;
+  color: var(--text-alt);
+}
+
+button:hover{
+  background-color: var(--primary-highlighted);
+}
+
+/*Specific components*/
+
+header {
+  align-items: center;
+  height: 80px;
+}
+
+header nav {
+  gap: 128px;
+  align-items: center;
+}
+
+#header-logo {
+  margin-left: 16px;
+}
+
+#mobile-menu {
+  display: none;
+}
+
+#mobile-menu svg {
+  fill: var(--primary);
+}
+
+#aboutme-section > div:last-child,
+#greeting-section > div {
+  width: var(--five-col);
+  padding-left: var(--one-col);
+  padding-right: var(--one-col);
+}
+
+#greeting-section > img {
+  width: var(--seven-col);
+  z-index: -1;
+}
+
+#aboutme-section > * {
+  padding-top: var(--vertical-space);
+  padding-bottom: var(--vertical-space);
+}
+
+#aboutme-section > pre {
+  width: var(--seven-col);
+  background-color: var(--faux-code-bg);
+  color: var(--text-alt);
+  padding-left: var(--one-col);
+}
+
+#projects-section h2,
+#projects-section h4 {
+  text-align: center;
+  margin-top: var(--vertical-space);
+  margin-bottom: var(--vertical-space);
+}
+
+#projects-section h2 {
+  font-size: 48px;
+}
+
+#projects-section h4 {
+  font-size: 32px;
+}
+
+#projects-div {
+  justify-content: space-around;
+  padding-left: var(--one-col);
+  padding-right: var(--one-col);
+}
+
+#projects-div > * {
+  width: var(--three-col);
+}
+
+#contact-section {
+  justify-content: space-between;
+  padding: var(--vertical-space) var(--one-col);
+  border-top:2px solid var(--divider);
+}
+
+#contact-section > div {
+  width: var(--three-col);
+}
+
+#contact-form {
+  width: var(--six-col);
+}
+
+#contact-form textarea,
+#contact-form input {
+  padding:1em;
+  margin-bottom: 2em;
+  border: 1px solid var(--divider);
+}
+
+#contact-form > div:first-child{
+  gap: 1em;
+}
+
+footer {
+  background-color: var(--faux-code-bg);
+  padding-top: var(--vertical-space);
+  padding-bottom: var(--vertical-space);
+}
+
+footer * {
+  color: var(--text-alt);
+}
+
+/*Media Queries*/
+@media screen and (max-width: 768px){
+  :root {
+    --vertical-space: 83px;
+  }
+
+  header nav {
+    gap: 64px;
+    align-items: center;
+  }
+
+  #aboutme-section > pre {
+    padding: 1em;
+  }
+
+  #aboutme-section > div {
+    flex-basis: 100%;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  #projects-section h2 {
+    font-size: 40px;
+    padding-left: var(--one-col);
+    padding-right: var(--one-col);
+  }
+
+  #projects-section h4 {
+    font-size: 32px;
+    padding-left: var(--one-col);
+    padding-right: var(--one-col);
+  }
+
+  #projects-div {
+    padding-left: var(--one-col);
+    padding-right: var(--one-col);
+    flex-wrap: wrap;
+    justify-content: start;
+  }
+
+  #projects-div > * {
+    width: var(--five-col);
+    margin-bottom: 3em;
+  }
+
+  #projects-div > *:last-child {
+    margin-bottom: 0;
+  }
+
+  #contact-section {
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--vertical-space);
+  }
+
+  #contact-section > div {
+    width: var(--six-col);
+  }
+
+  #contact-form {
+    min-width: 100%;
+  }
+
+  #contact-form textarea,
+  #contact-form input {
+    border: 1px solid var(--divider);
+  }
+}
+
+@media screen and (max-width: 480px){
+  :root {
+    --vertical-space: 50px;
+  }
+
+  #header {
+    height: fit-content;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #header > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 2.5em;
+  }
+
+  #navlinks {
+    flex-direction: column;
+    gap: 1em;
+    transition: all 0.5s ease;
+    overflow: hidden;
+    height: 0;
+  }
+
+  #mobile-menu {
+    display: block;
+  }
+
+  #mobile-menu,
+  #header-logo {
+    margin-bottom:0.5em;
+    margin-top:0.5em;
+  }
+
+  .title-font {
+    font-size: 24px;
+  }
+
+  #greeting-section {
+    flex-direction: column-reverse;
+  }
+
+  #greeting-section > *{
+    min-width: 100%;
+    margin-bottom: var(--vertical-space);
+  }
+
+  #aboutme-section {
+    flex-direction: column;
+  }
+
+  #aboutme-section > * {
+    min-width: 100%;
+  }
+
+  #aboutme-section > pre {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    max-height: 8em;
+  }
+
+  #greeting-section > div,
+  #aboutme-section > div {
+    text-align: center;
+  }
+
+  #projects-section {
+    border-top: 2px solid var(--divider);
+  }
+
+  #projects-section h2 {
+    font-size: 28px;
+    padding-left: var(--one-col);
+    padding-right: var(--one-col);
+  }
+
+  #projects-section h4 {
+    font-size: 24px;
+    padding-left: var(--one-col);
+    padding-right: var(--one-col);
+  }
+
+  #projects-div {
+    flex-direction: column;
+    gap: var(--vertical-space);
+  }
+
+  #projects-div > * {
+    min-width: 100%;
+    text-align: center;
+  }
+
+  #contact-section > div {
+    min-width: 100%;
+    text-align: center;
+  }
+
+  #contact-form > div:first-child {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  #contact-form textarea,
+  #contact-form input {
+    border: 1px solid var(--divider);
+  }
+
+  #contact-form button {
+    padding: 1.75em 4em;
+  }
+
+  #contact-form {
+    min-width: 100%;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 10px;
+    font-family: 'martelRegular';
+  }
+}
