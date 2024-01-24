@@ -37,6 +37,10 @@ let la_fenetre_du_debut = null;
 //shown at the ending of the game.
 let la_fenetre_de_la_fin = null;
 
+//The explosion for the bomb : this holds a handle to the bomb explosion
+//screen vfx div.
+let la_explosion_pour_la_bombe = null;
+
 //The maximum fruits : the maximum amount of fruits to be used during
 //the game.
 const LES_FRUITS_MAXIMUM = 10;
@@ -51,9 +55,28 @@ const les_fruits_inactif = [];
 //Inactive bombs : these bombs can be recycled to spawn more bombs
 const les_bombes_inactif = [];
 
-//The object cache : a dictionary of all the live HTMLElements used in 
-//the page to reduce the amount of times `document.getElementById()` is
-//called.
+/**
+ * The object cache : a dictionary of all the live HTMLElements used in 
+ * the page to reduce the amount of times `document.getElementById()` is
+ * called.
+ * 
+ * Structure : {
+ *  element : HTMLElement,
+ *  is_cut : boolean,
+ *  is_active : boolean,
+ *  type : string,
+ *  vars : {
+ *    initial_x : int,
+ *    initial_y : int,
+ *    initial_x_velocity : int,
+ *    initial_y_velocity : int,
+ *    lifespan : int,
+ *    rotation_normalization_factor : -1, 0, 1,
+ *    
+ *    fruit : string, (only available on fruit-types)
+ *  },
+ * }
+ */
 const le_cache_des_objets = {};
 
 //The fruits : a list of all the fruits that are available to be spawned.
@@ -112,10 +135,21 @@ window.onload = _ => {
   la_vue = document.getElementById('viewport');
   la_scene = document.getElementById('stage');
 
+  //Disabled, causes lag probably due to DOM updates.
+  //Setup event listener for the mouse.
+  //la_vue.addEventListener('mousemove', event => {
+  //  document.documentElement.style.setProperty('--gv-mouse-x-px', event.clientX);
+  //  document.documentElement.style.setProperty('--gv-mouse-y-px', event.clientY);
+  //});
+
   //Cache handles to the starting and ending dialogs.
   le_conteneur_du_score_2 = document.getElementById('gameover-points-display');
   la_fenetre_du_debut = document.getElementById('intro-dialog');
   la_fenetre_de_la_fin = document.getElementById('gameover-dialog');
+
+  //Cache handle to the bomb explosion vfx and setup it's event listener.
+  la_explosion_pour_la_bombe = document.getElementById('bomb-screen-vfx');
+  la_explosion_pour_la_bombe.addEventListener('animationiteration', onBombExplosionAnimationIterate);
 
   //Create and append the hud.
   const le_fragment_de_la_vue = document.createDocumentFragment();
@@ -186,15 +220,6 @@ window.onload = _ => {
     //Add the inner-div elements to the fruit container.
     le_fruit.append(la_moitie_du_fruit_1, le_vfx_pour_couper, la_moitie_du_fruit_2);
 
-    setInlineVariablesForElement(le_fruit, {
-      "--fruit-initial-y-pc": '100;',
-      "--fruit-initial-y-velocity-pc": '-100;',
-      "--fruit-initial-x-pc": '0;',
-      "--fruit-initial-x-velocity-pc": '0;',
-      "--fruit-lifespan-s": '5;',
-      "--fruit-rotation-normalization-factor": "0;",
-    });
-
     //Assign the proper classes to the fruit container.
     le_fruit.classList.add(
       'fruit',
@@ -214,7 +239,28 @@ window.onload = _ => {
       element: le_fruit,
       is_active: false,
       is_cut: false,
+      type: 'fruit',
+      vars: {
+        initial_x: 0,
+        initial_y: 100,
+        initial_x_velocity: 0,
+        initial_y_velocity: -100,
+        lifespan: 5,
+        rotation_normalization_factor: 0,
+      },
     };
+
+    //Set the fruitvars.
+    le_fruit.classList.add(
+      'fruitvar-initial-x-pc_0',
+      'fruitvar-initial-y-pc_100',
+      'fruitvar-initial-x-velocity-pc_0',
+      'fruitvar-initial-y-velocity-pc_-100',
+      'fruitvar-lifespan-s_5',
+      'fruitvar-rotation-normalization-factor_0',
+    );
+
+    //TODO: Remove these, I'm not sure if I actually use them.
     le_cache_des_objets[la_moitie_du_fruit_1.id] = {
       element: la_moitie_du_fruit_1,
     };
@@ -244,29 +290,9 @@ window.onload = _ => {
   for (let i = 0; i < LES_BOMBES_MAXIMUM; i++) {
     //Create and store handles to the base elements.
     const la_bombe = document.createElement('div');
-    const la_explosion_pour_la_bombe = document.createElement('div');
 
     //Set the content for the inner divs so it renders.
     la_bombe.innerHTML = '&nbsp;';
-    la_explosion_pour_la_bombe.innerHTML = '&nbsp;';
-
-    //Assign the proper classes to the inner-divs.
-    la_explosion_pour_la_bombe.classList.add(
-      'bomb-explosion',
-      'pause-animation',
-      'hide',
-    );
-
-    //Add the inner-div elements to the fruit container.
-    la_bombe.append(la_explosion_pour_la_bombe);
-
-    setInlineVariablesForElement(la_bombe, {
-      "--bomb-initial-y-pc": '100;',
-      "--bomb-initial-y-velocity-pc": '-100;',
-      "--bomb-initial-x-pc": '0;',
-      "--bomb-initial-x-velocity-pc": '0;',
-      "--bomb-lifespan-s": '5;',
-    });
 
     //Assign the proper classes to the bomb container.
     la_bombe.classList.add(
@@ -278,14 +304,32 @@ window.onload = _ => {
 
     //Set the id of the bomb elements.
     la_bombe.setAttribute('id', `bomb-${i + 1}`);
-    la_explosion_pour_la_bombe.setAttribute('id', `bomb-${i + 1}-explosion`);
 
     //Add the bomb to the object cache.
     le_cache_des_objets[la_bombe.id] = {
       element: la_bombe,
       is_active: false,
       is_cut: false,
+      type: 'bomb',
+      vars: {
+        initial_x: 0,
+        initial_y: 100,
+        initial_x_velocity: 0,
+        initial_y_velocity: -100,
+        lifespan: 5,
+        rotation_normalization_factor: 0,
+      },
     };
+
+    //Set the fruitvars.
+    la_bombe.classList.add(
+      'fruitvar-initial-x-pc_0',
+      'fruitvar-initial-y-pc_100',
+      'fruitvar-initial-x-velocity-pc_0',
+      'fruitvar-initial-y-velocity-pc_-100',
+      'fruitvar-lifespan-s_5',
+      'fruitvar-rotation-normalization-factor_0',
+    );
 
     //Add this id of the bomb to the list of inactive bombs to be 
     //used for spawning.
@@ -327,23 +371,30 @@ window.onload = _ => {
     'hide'
   );
   le_fruit.append(la_moitie_du_fruit_1, le_vfx_pour_couper, la_moitie_du_fruit_2);
-  setInlineVariablesForElement(le_fruit, {
-    "--fruit-initial-y-pc": '50;',
-    "--fruit-initial-y-velocity-pc": '10;',
-    "--fruit-initial-x-pc": '50;',
-    "--fruit-initial-x-velocity-pc": '10;',
-    "--fruit-lifespan-s": `5;`,
-    "--fruit-rotation-normalization-factor": "1;",
-  });
   le_fruit.classList.add(
     'fruit-button',
     'foreground',
+    'fruitvar-initial-x-pc_50',
+    'fruitvar-initial-y-pc_50',
+    'fruitvar-initial-x-velocity-pc_10',
+    'fruitvar-initial-y-velocity-pc_-66',
+    'fruitvar-lifespan-s_5',
+    'fruitvar-rotation-normalization-factor_1',
   );
   le_fruit.setAttribute('id', 'reset-button');
   le_cache_des_objets[le_fruit.id] = {
     element: le_fruit,
     is_active: false,
     is_cut: false,
+    type: 'fruit',
+    vars: {
+      initial_x: 50,
+      initial_y: 50,
+      initial_x_velocity: 10,
+      initial_y_velocity: 10,
+      lifespan: 5,
+      rotation_normalization_factor: 1,
+    },
   };
   le_fragment.append(le_fruit);
   le_fruit.addEventListener('mouseover', onResetButtonHovered);
@@ -385,23 +436,44 @@ function spawnFruits() {
     //Pop an inactive fruit id off the stack of inactive fruits.
     const le_id = les_fruits_inactif.pop();
 
-    //Set the spawn variables for the inactive fruit.
-    const la_vitesse_minimum_pour_y = 50;
+    //Calculate the spawn variables for the inactive fruit.
+    const la_vitesse_minimum_pour_y = 66;
     const la_vitesse_maximum_pour_y = 100;
-    const la_position_initial_pour_x = Math.max(Math.round(Math.random() * 90), 10);
-    const la_vitesse_initial_pour_y = Math.max(la_vitesse_minimum_pour_y, ((Math.random() * la_vitesse_maximum_pour_y) + 125) / 2);
+    //const la_position_initial_pour_x = Math.max(Math.round(Math.random() * 90), 10);
+    //const la_position_initial_pour_x = Math.max(Math.random() * 90, 10);
+    const la_position_initial_pour_x = (Math.random() * (90 - 10) + 10);
+    //const la_vitesse_initial_pour_y = Math.max(la_vitesse_minimum_pour_y, ((Math.random() * la_vitesse_maximum_pour_y) + 125) / 2);
+    //const la_vitesse_initial_pour_y = Math.max(Math.floor(Math.random() * la_vitesse_maximum_pour_y), la_vitesse_minimum_pour_y);
+    //const la_vitesse_initial_pour_y = Math.max(Math.random() * la_vitesse_maximum_pour_y, la_vitesse_minimum_pour_y) * -1;
+    const la_vitesse_initial_pour_y = (Math.random() * (la_vitesse_maximum_pour_y - la_vitesse_minimum_pour_y) + la_vitesse_minimum_pour_y) * -1;
     const la_vitesse_initial_pour_x = (100 - la_position_initial_pour_x) > la_position_initial_pour_x ?
       Math.random() * (100 - la_position_initial_pour_x) :
       Math.random() * la_position_initial_pour_x * -1;
     const le_modificateur_pour_tourner = (100 - la_position_initial_pour_x) > la_position_initial_pour_x ? -1 : 1;
-    setInlineVariablesForElement(le_cache_des_objets[le_id].element, {
-      "--fruit-initial-y-pc": '100;',
-      "--fruit-initial-y-velocity-pc": `-${la_vitesse_initial_pour_y};`,
-      "--fruit-initial-x-pc": `${la_position_initial_pour_x};`,
-      "--fruit-initial-x-velocity-pc": `${la_vitesse_initial_pour_x};`,
-      "--fruit-lifespan-s": '5;',
-      "--fruit-rotation-normalization-factor": `${le_modificateur_pour_tourner};`,
-    });
+
+    //Remove the old fruitvar classes on the element.
+    le_cache_des_objets[le_id].element.classList.remove(
+      `fruitvar-initial-x-pc_${le_cache_des_objets[le_id].vars.initial_x}`,
+      `fruitvar-initial-x-velocity-pc_${le_cache_des_objets[le_id].vars.initial_x_velocity}`,
+      `fruitvar-initial-y-velocity-pc_${le_cache_des_objets[le_id].vars.initial_y_velocity}`,
+      `fruitvar-rotation-normalization-factor_${le_cache_des_objets[le_id].vars.rotation_normalization_factor}`,
+    );
+
+    //Update the object cache variables with the new values. Floor the values
+    //to enforce integer values only since the fruitvar classes were only
+    //generated for integer values.
+    le_cache_des_objets[le_id].vars.initial_x = Math.floor(la_position_initial_pour_x);
+    le_cache_des_objets[le_id].vars.initial_x_velocity = Math.floor(la_vitesse_initial_pour_x);
+    le_cache_des_objets[le_id].vars.initial_y_velocity = Math.floor(la_vitesse_initial_pour_y);
+    le_cache_des_objets[le_id].vars.rotation_normalization_factor = Math.floor(le_modificateur_pour_tourner);
+
+    //Set the new fruitvar classes on the element using the new values.
+    le_cache_des_objets[le_id].element.classList.add(
+      `fruitvar-initial-x-pc_${le_cache_des_objets[le_id].vars.initial_x}`,
+      `fruitvar-initial-x-velocity-pc_${le_cache_des_objets[le_id].vars.initial_x_velocity}`,
+      `fruitvar-initial-y-velocity-pc_${le_cache_des_objets[le_id].vars.initial_y_velocity}`,
+      `fruitvar-rotation-normalization-factor_${le_cache_des_objets[le_id].vars.rotation_normalization_factor}`,
+    );
 
     //Randomly determine which fruit to spawn.
     const rng = Math.round(Math.random() * (les_fruits.length - 1));
@@ -468,26 +540,47 @@ function spawnBombs() {
     //Pop an inactive bomb id off the stack of inactive bombs.
     const le_id = les_bombes_inactif.pop();
 
-    //Set the spawn variables for the inactive bomb.
-    const la_vitesse_minimum_pour_y = 50;
+    //Calculate the spawn variables for the inactive bomb.
+    const la_vitesse_minimum_pour_y = 66;
     const la_vitesse_maximum_pour_y = 100;
-    const la_position_initial_pour_x = Math.max(Math.round(Math.random() * 90), 10);
-    const la_vitesse_initial_pour_y = Math.max(la_vitesse_minimum_pour_y, ((Math.random() * la_vitesse_maximum_pour_y) + 125) / 2);
+    const la_position_initial_pour_x = (Math.random() * (90 - 10) + 10);
+    const la_vitesse_initial_pour_y = (Math.random() * (la_vitesse_maximum_pour_y - la_vitesse_minimum_pour_y) + la_vitesse_minimum_pour_y) * -1;
     const la_vitesse_initial_pour_x = (100 - la_position_initial_pour_x) > la_position_initial_pour_x ?
       Math.random() * (100 - la_position_initial_pour_x) :
       Math.random() * la_position_initial_pour_x * -1;
-    setInlineVariablesForElement(le_cache_des_objets[le_id].element, {
-      "--bomb-initial-y-pc": '100;',
-      "--bomb-initial-y-velocity-pc": `-${la_vitesse_initial_pour_y};`,
-      "--bomb-initial-x-pc": `${la_position_initial_pour_x};`,
-      "--bomb-initial-x-velocity-pc": `${la_vitesse_initial_pour_x};`,
-      "--bomb-lifespan-s": '5;',
-    });
+    const le_modificateur_pour_tourner = (100 - la_position_initial_pour_x) > la_position_initial_pour_x ? -1 : 1;
+
+    //Remove the old fruitvar classes on the element.
+    le_cache_des_objets[le_id].element.classList.remove(
+      `fruitvar-initial-x-pc_${le_cache_des_objets[le_id].vars.initial_x}`,
+      `fruitvar-initial-x-velocity-pc_${le_cache_des_objets[le_id].vars.initial_x_velocity}`,
+      `fruitvar-initial-y-velocity-pc_${le_cache_des_objets[le_id].vars.initial_y_velocity}`,
+      `fruitvar-rotation-normalization-factor_${le_cache_des_objets[le_id].vars.rotation_normalization_factor}`,
+    );
+
+    //Update the object cache variables with the new values. Floor the values
+    //to enforce integer values only since the fruitvar classes were only
+    //generated for integer values.
+    le_cache_des_objets[le_id].vars.initial_x = Math.floor(la_position_initial_pour_x);
+    le_cache_des_objets[le_id].vars.initial_x_velocity = Math.floor(la_vitesse_initial_pour_x);
+    le_cache_des_objets[le_id].vars.initial_y_velocity = Math.floor(la_vitesse_initial_pour_y);
+    le_cache_des_objets[le_id].vars.rotation_normalization_factor = Math.floor(le_modificateur_pour_tourner);
+
+    console.log(le_cache_des_objets[le_id].vars);
+
+    //Set the new fruitvar classes on the element using the new values.
+    le_cache_des_objets[le_id].element.classList.add(
+      `fruitvar-initial-x-pc_${le_cache_des_objets[le_id].vars.initial_x}`,
+      `fruitvar-initial-x-velocity-pc_${le_cache_des_objets[le_id].vars.initial_x_velocity}`,
+      `fruitvar-initial-y-velocity-pc_${le_cache_des_objets[le_id].vars.initial_y_velocity}`,
+      `fruitvar-rotation-normalization-factor_${le_cache_des_objets[le_id].vars.rotation_normalization_factor}`,
+    );
 
     //Start the projectile animation for this object.
     le_cache_des_objets[le_id].element.classList.remove(
       'pause-animation',
       'hide',
+      'fruit-rotated-0deg',
     );
 
     //Set the active flag on the cached object.
@@ -515,13 +608,11 @@ function onFruitHovered(event) {
       cutFruit(event.target.parentElement);
 
       //Calculate score.
-      const les_facons = getInlineVariablesFromElement(event.target.parentElement);
-
       //The base score is calculated from the initial x and y velocity. Slower
       //fruits are easier to hit and give less score. Faster fruits are harder 
       //to hit and give more score.
-      const la_base = Math.abs(parseInt(les_facons["--fruit-initial-x-velocity-pc:"]))
-        + Math.abs(parseInt(les_facons["--fruit-initial-y-velocity-pc:"]));
+      const la_base = Math.abs(le_cache_des_objets[event.target.parentElement.id].vars.initial_x_velocity) +
+        Math.abs(le_cache_des_objets[event.target.parentElement.id].vars.initial_y_velocity);
 
       //Obtain the time it took for the last fruit to be hit and update that value.
       const la_difference = Date.now() - le_coup_reussi_dernier;
@@ -547,11 +638,7 @@ function onFruitHovered(event) {
 
 
 function onBombHovered(event) {
-  //Only trigger the bomb if it hasn't been triggered yet.
-  if (
-    event.target.classList.contains('bomb') &&
-    le_cache_des_objets[event.target.id].is_cut === false
-  ) {
+  if (event.target.classList.contains('bomb')) {
     //Activate the respite.
     le_repit = true;
 
@@ -570,10 +657,7 @@ function onBombHovered(event) {
 
     //Update the lives HUD element.
     le_conteneur_des_vies.innerText = getLivesString(les_vies);
-
-
   }
-
 }
 
 
@@ -622,31 +706,13 @@ function onResetButtonHovered(event) {
 
 
 function triggerBomb(bomb_container) {
-  bomb_container.classList.add(
-    //Hide the element to reduce repaint/reflow.
-    'hide',
-    //Pause the animation to halt the lifespan timer.
-    'pause-animation',
-  );
-
   //Trigger the bomb explosion vfx.
-  bomb_container.children[0].classList.remove('pause-animation', 'hide');
+  la_explosion_pour_la_bombe.classList.remove('pause-animation', 'hide');
 
   triggerCameraShake();
 
-  //Show the element
-  bomb_container.classList.remove('hide');
-
-  //Set the `is_cut` flag on the cached object.
-  le_cache_des_objets[bomb_container.id].is_cut = true;
-
   //Remove all entities on screen.
   for (const key in le_cache_des_objets) {
-    //les_textes_de_la_facon += `${key}: ${inline_variables[key]} `;
-
-    //Skip the entity referencing the current bomb.
-    if (key === bomb_container.id) continue;
-
     //Skip entities that are inactive.
     if (le_cache_des_objets[key].is_active === false) continue;
 
@@ -656,10 +722,10 @@ function triggerBomb(bomb_container) {
     //Skip entities that are not whole fruits.
     if (le_cache_des_objets[key].element.classList.contains('fruit-half') === true) continue;
 
-    //The only entities remaining now should be active bombs that haven't 
-    //been cut and active fruit that haven't been cut. So we'll just
-    //hide these elements so the player can't trigger them, and trigger
-    //the animation-iterate cleanup.
+    //The only entities remaining now should be the current bomb, active 
+    //bombs that haven't been cut and active fruit that haven't been cut. 
+    //So we'll just hide these elements so the player can't trigger them, 
+    //and trigger the animation-iterate cleanup.
     le_cache_des_objets[key].element.classList.add('hide');
 
     //Mark the entity as inactive, and push it on to the stack of inactive
@@ -676,7 +742,6 @@ function triggerBomb(bomb_container) {
         les_bombes_inactif.push(key);
       }
     }
-
   }
 }
 
@@ -684,14 +749,13 @@ function triggerBomb(bomb_container) {
 
 
 function cutFruit(fruit_container) {
-  const les_facons = getInlineVariablesFromElement(fruit_container);
   fruit_container.classList.add(
     //Hide the element to reduce repaint/reflow.
     'hide',
     //Pause the animation to halt the lifespan timer.
     'pause-animation',
     //Stabilize the fruit's rotation.
-    les_facons['--fruit-rotation-normalization-factor:'] === '1;' ? 'fruit-rotated-90deg' : 'fruit-rotated-270deg',
+    le_cache_des_objets[fruit_container.id].vars.rotation_normalization_factor === 1 ? 'fruit-rotated-90deg' : 'fruit-rotated-270deg',
   );
 
   //Send send this element to the background so other fruit containers
@@ -784,75 +848,15 @@ function onBombAnimationIterate(event) {
   if (event.target.classList.contains('bomb') === true) {
     //This is a bomb, and their animation just ended.
 
-    if (le_cache_des_objets[event.target.id].is_cut === true) {
-      //This is a bomb, their animation just ended, and the bomb has
-      //been cut. This means that we need to wait for the bomb explosion
-      //animation to end. We reinforce the pause animation to prevent 
-      //the bomb container from moving.
-
-      event.target.classList.add('pause-animation');
-    }
-    else {
-      //This is a bomb, their animation just ended and the bomb has
-      //not been cut. This means that we can set this bomb as inactive
-      //and hide the bomb.
-
-      //Pause the lifespan timer on the bomb container, and hide the 
-      //bomb container until it gets chosen to spawn again.
-      event.target.classList.add('pause-animation', 'hide');
-
-      //Mark the bomb as inactive, and push it on to the stack of inactive
-      //bomb.
-      le_cache_des_objets[event.target.id].is_active = false;
-      if (les_bombes_inactif.includes(event.target.id) === false) {
-        les_bombes_inactif.push(event.target.id);
-      }
-    }
-  }
-  else if (event.target.classList.contains('bomb-explosion') === true) {
-    //This is the bomb-explosion and their animation just ended, this also
-    //means the bomb has been cut. This means we can pause the animation
-    //for the bomb-explosion and the parent bomb container, hide it, and
-    //add it to the list of inactive bombs to be recycled.
-
-    //Pause the lifespan timer on the bomb-explosion and hide it.
-    event.target.classList.add('pause-animation', 'hide');
-
     //Pause the lifespan timer on the bomb container, and hide the 
     //bomb container until it gets chosen to spawn again.
-    event.target.parentElement.classList.add('pause-animation', 'hide');
+    event.target.classList.add('pause-animation', 'hide');
 
     //Mark the bomb as inactive, and push it on to the stack of inactive
-    //bombs if it's not there already.
-    le_cache_des_objets[event.target.parentElement.id].is_active = false;
-    if (les_bombes_inactif.includes(event.target.parentElement.id) === false) {
-      les_bombes_inactif.push(event.target.parentElement.id);
-    }
-
-    //Deactivate the respite.
-    le_repit = false;
-
-    //Check player life.
-    if (les_vies <= 0) {
-      //Trigger game-over state.
-
-      //Hide the HUD
-      le_conteneur_du_multiplicateur.classList.add('hide');
-      le_conteneur_du_score_initial.classList.add('hide');
-      le_conteneur_du_score.classList.add('hide');
-      le_conteneur_des_vies.classList.add('hide');
-
-      //Pause fruit/bomb spawning
-      est_le_jeu_actif = false;
-
-      //Show the gameover screen.
-      le_conteneur_du_score_2.innerText = `Scored ${le_score} points!`;
-      la_fenetre_de_la_fin.classList.remove('hide');
-
-      //Show the reset button
-      le_cache_des_objets['reset-button'].is_active = false;
-      le_cache_des_objets['reset-button'].is_cut = false;
-      le_cache_des_objets['reset-button'].element.classList.remove('hide', 'pause-animation', 'fruit-rotated-90deg', 'fruit-rotated-270deg');
+    //bombs.
+    le_cache_des_objets[event.target.id].is_active = false;
+    if (les_bombes_inactif.includes(event.target.id) === false) {
+      les_bombes_inactif.push(event.target.id);
     }
   }
 }
@@ -860,12 +864,58 @@ function onBombAnimationIterate(event) {
 
 
 
-function triggerCameraShake() {
-  la_scene.classList.add('camera-shake');
+function onBombExplosionAnimationIterate(event) {
+  //This is the bomb-explosion and their animation just ended, this also
+  //means the bomb has been cut. This means we can pause the animation
+  //for the bomb-explosion, hide it, and check the player's life.
 
-  la_scene.addEventListener('transitionend', function (event) {
-    if (event.target.id === la_scene.id) {
-      la_scene.classList.remove('camera-shake');
+  //Pause the lifespan timer on the bomb-explosion and hide it.
+  la_explosion_pour_la_bombe.classList.add('pause-animation', 'hide');
+
+  //Deactivate the respite.
+  le_repit = false;
+
+  //Check player life.
+  if (les_vies <= 0) {
+    //Trigger game-over state.
+
+    //Hide the HUD
+    le_conteneur_du_multiplicateur.classList.add('hide');
+    le_conteneur_du_score_initial.classList.add('hide');
+    le_conteneur_du_score.classList.add('hide');
+    le_conteneur_des_vies.classList.add('hide');
+
+    //Pause fruit/bomb spawning
+    est_le_jeu_actif = false;
+
+    //Show the gameover screen.
+    le_conteneur_du_score_2.innerText = `Scored ${le_score} points!`;
+    la_fenetre_de_la_fin.classList.remove('hide');
+
+    //Show the reset button
+    le_cache_des_objets['reset-button'].is_active = false;
+    le_cache_des_objets['reset-button'].is_cut = false;
+    le_cache_des_objets['reset-button'].element.classList.remove('hide', 'pause-animation', 'fruit-rotated-90deg', 'fruit-rotated-270deg');
+  }
+}
+
+
+
+
+function triggerCameraShake() {
+  //First unpause the camera shake effect on the stage.
+  la_scene.classList.remove('pause-animation', 'enforce-stage-position');
+
+  //Then when the animation iteration event fires,
+  la_scene.addEventListener('animationiteration', event => {
+    //Since having the event listener on the stage listens for all
+    //animation iteration events for elements in the stage, filter 
+    //by event target id.
+    //TODO: put everything on this stage event listener instead of 
+    //having separate animation iteration listeners for each element.
+    if (event.target.id === 'stage') {
+      //Pause the stage animation again.
+      la_scene.classList.add('pause-animation', 'enforce-stage-position');
     }
   });
 }

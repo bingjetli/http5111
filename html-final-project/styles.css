@@ -59,6 +59,8 @@
   --gv-fruit-half-initial-x-velocity-pc : -66;
   --gv-fruit-half-initial-y-velocity-pc : -50;
   --gv-entity-size-em : 7;
+  --gv-mouse-x-px : 0;
+  --gv-mouse-y-px : 0;
 }
 
 
@@ -100,6 +102,7 @@ main {
 }
 
 #viewport {
+  cursor: crosshair;
 
   min-width: 100%;
   max-width: 100%;
@@ -109,7 +112,11 @@ main {
 
 #score-container{
   color: white;
-  text-shadow: 2px 2px 5px hotpink;
+  text-shadow: 
+    2px 2px 5px hotpink, 
+    2px -2px 5px hotpink, 
+    -2px -2px 5px hotpink,
+    -2px 2px 5px hotpink;
 
   position: fixed;
 
@@ -127,7 +134,11 @@ main {
 
 #initial-score-container{
   color: white;
-  text-shadow: 2px 2px 5px hotpink;
+  text-shadow: 
+    2px 2px 5px hotpink, 
+    2px -2px 5px hotpink, 
+    -2px -2px 5px hotpink,
+    -2px 2px 5px hotpink;
 
   position: fixed;
 
@@ -145,7 +156,11 @@ main {
 
 #multiplier-container{
   color: white;
-  text-shadow: 2px 2px 5px hotpink;
+  text-shadow: 
+    2px 2px 5px hotpink, 
+    2px -2px 5px hotpink, 
+    -2px -2px 5px hotpink,
+    -2px 2px 5px hotpink;
 
   position: fixed;
 
@@ -163,7 +178,11 @@ main {
 
 #lives-container{
   color: white;
-  text-shadow: 2px 2px 5px hotpink;
+  text-shadow: 
+    2px 2px 5px hotpink, 
+    2px -2px 5px hotpink, 
+    -2px -2px 5px hotpink,
+    -2px 2px 5px hotpink;
 
   position: fixed;
   right: 0;
@@ -183,7 +202,6 @@ main {
 #gameover-dialog,
 #intro-dialog {
   color: white;
-  background-color: #ff69b4aa;
   padding-top: 1em;
   padding-bottom: 1em;
 
@@ -201,6 +219,12 @@ main {
 #intro-dialog > div {
   font-size: max(5vw, 2em);
   margin: 0;
+
+  text-shadow: 
+    2px 2px 5px hotpink, 
+    2px -2px 5px hotpink, 
+    -2px -2px 5px hotpink,
+    -2px 2px 5px hotpink;
 }
 
 #gameover-dialog > p,
@@ -208,6 +232,27 @@ main {
   font-family: "InterTight-Regular";
   margin: 0;
   margin-top: 1em;
+  text-shadow: 
+    2px 2px 5px hotpink, 
+    2px -2px 5px hotpink, 
+    -2px -2px 5px hotpink,
+    -2px 2px 5px hotpink;
+}
+
+#mouse-highlighter {
+  display: inline-block;
+  min-width: 1em;
+  min-height: 1em;
+
+  background-color: hotpink;
+
+  position: fixed;
+  left: calc(
+    var(--gv-mouse-x-px) * var(--TO-PIXEL)
+  );
+  top: calc(
+    var(--gv-mouse-y-px) * var(--TO-PIXEL)
+  );
 }
 
 #stage {
@@ -301,7 +346,6 @@ main {
     var(--fruit-lifespan-s) * var(--TO-SECONDS) 
   );
   animation-timing-function: linear;
-
 }
 
 .fruit-half-1 {
@@ -397,16 +441,15 @@ main {
   background-image: url(images/cut-vfx.png);
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  mix-blend-mode: hard-light;
 
   display: inline-block;
   min-width: 100%;
-  min-height: 5%;
+  min-height: 1px;
 
   position: absolute;
-  top: 42.5%;
+  filter: drop-shadow(2px 2px 10px hotpink);
 
-  animation-name: anim-cut-vfx-size, anim-cut-vfx-opacity;
+  animation-name: anim-cut-vfx-size;
   animation-iteration-count: infinite;
   animation-duration: 250ms;
   animation-timing-function: linear;
@@ -500,10 +543,10 @@ main {
   left: 0%;
 
 
-  animation-name: anim-bomb-position;
+  animation-name: anim-fruit-position, anim-fruit-spin;
   animation-iteration-count: infinite;
   animation-duration: calc(
-    var(--bomb-lifespan-s) * var(--TO-SECONDS) 
+    var(--fruit-lifespan-s) * var(--TO-SECONDS) 
   );
   animation-timing-function: linear;
 }
@@ -512,16 +555,16 @@ main {
   background-color: crimson;
 
   display: inline-block;
-  min-width: 200vw;
-  min-height: 200vh;
+  min-width: 100vw;
+  min-height: 100vh;
 
   position: fixed;
-  top: -50vh;
-  left: -50vw;
+  top: 0;
+  left: 0;
 
   z-index: 2;
 
-  animation-name: anim-bomb-explosion-opacity, anim-bomb-explosion-color, anim-stage-shake;
+  animation-name: anim-bomb-explosion-opacity, anim-bomb-explosion-color;
   animation-iteration-count: infinite;
   animation-duration: 1000ms;
   animation-timing-function: ease-in-out;
@@ -553,8 +596,15 @@ main {
 
 .camera-shake {
   animation-name: anim-stage-shake;
-  animation-duration: 1000ms;
+  animation-iteration-count: infinite;
+  animation-duration: 500ms;
   animation-timing-function: ease-in-out;
+}
+
+/*TODO: rework stage shake implementation to avoid using !important*/
+.enforce-stage-position {
+  top: 0% !important;
+  left: 0% !important;
 }
 
 .pause-animation {
@@ -565,6 +615,7 @@ main {
   display: none;
 }
 
+/*TODO: rework fruit cut implementation to avoid using !important*/
 .fruit-rotated-90deg {
   rotate: 90deg !important; /*override the rotation from the spin animation.*/
 }
@@ -605,6 +656,7 @@ main {
           a = acceleration and
           t = time.
   */
+/*TODO: write python script to generate 100 keyframes for this animation.*/
 @keyframes anim-fruit-position {
   0% {
     top : calc(
@@ -1171,7 +1223,7 @@ main {
 
   100% {
     rotate: calc(
-      var(--fruit-rotation-normalization-factor) * 360 * (((var(--fruit-initial-x-pc) / 10) + (var(--fruit-initial-y-pc) / 10)) / 2) * var(--TO-DEGREES)
+      var(--fruit-rotation-normalization-factor) * 360 * (((var(--fruit-initial-x-velocity-pc) * var(--fruit-initial-x-velocity-pc)) * 0.005 + (var(--fruit-initial-y-velocity-pc) * -0.20)) / 2) * var(--TO-DEGREES)
     );
   }
 }
@@ -1202,16 +1254,28 @@ main {
 
 @keyframes anim-cut-vfx-size {
   0% {
-    left: 0;
+    left: 0%;
     top: 40%;
     min-width: 100%;
+    max-width: 100%;
     min-height: 20%;
+    max-height: 20%;
+  }
+  50% {
+    left: -50%;
+    top: 49.49%;
+    min-width: 200%;
+    max-width: 200%;
+    min-height: 1%;
+    max-height: 1%;
   }
   100% {
     left: -100%;
     top: 49.5%;
     min-width: 300%;
+    max-width: 300%;
     min-height: 1%;
+    max-height: 1%;
   }
 }
 
@@ -1225,6 +1289,7 @@ main {
   }
 }
 
+/*TODO: Remove this, it's no longer needed*/
 @keyframes anim-bomb-position {
   0% {
     top : calc(
@@ -1397,138 +1462,6 @@ main {
 
   100% {
     background-color: #fff;
-  }
-}
-
-@keyframes anim-stage-shake {
-  0% {
-    top: -3%;
-    left: 3%;
-  }
-  1% {
-    top: 3%;
-    left: -3%;
-  }
-  2% {
-    top: -3%;
-    left: 3%;
-  }
-  3% {
-    top: 3%;
-    left: -3%;
-  }
-  4% {
-    top: -3%;
-    left: 3%;
-  }
-  5% {
-    top: 3%;
-    left: -3%;
-  }
-  6% {
-    top: -3%;
-    left: 3%;
-  }
-  7% {
-    top: 3%;
-    left: -3%;
-  }
-  8% {
-    top: -3%;
-    left: 3%;
-  }
-  9% {
-    top: 3%;
-    left: -3%;
-  }
-  10% {
-    top: -3%;
-    left: 3%;
-  }
-  11% {
-    top: 2%;
-    left: -2%;
-  }
-  12% {
-    top: -2%;
-    left: 2%;
-  }
-  13% {
-    top: 2%;
-    left: -2%;
-  }
-  14% {
-    top: -2%;
-    left: 2%;
-  }
-  15% {
-    top: 2%;
-    left: -2%;
-  }
-  16% {
-    top: -2%;
-    left: 2%;
-  }
-  17% {
-    top: 2%;
-    left: -2%;
-  }
-  18% {
-    top: -2%;
-    left: 2%;
-  }
-  19% {
-    top: 2%;
-    left: -2%;
-  }
-  20% {
-    top: -2%;
-    left: 2%;
-  }
-  21% {
-    top: 1%;
-    left: -1%;
-  }
-  22% {
-    top: -1%;
-    left: 1%;
-  }
-  23% {
-    top: 1%;
-    left: -1%;
-  }
-  24% {
-    top: -1%;
-    left: 1%;
-  }
-  25% {
-    top: 1%;
-    left: -1%;
-  }
-  26% {
-    top: -1%;
-    left: 1%;
-  }
-  27% {
-    top: 1%;
-    left: -1%;
-  }
-  28% {
-    top: -1%;
-    left: 1%;
-  }
-  29% {
-    top: 1%;
-    left: -1%;
-  }
-  30% {
-    top: 0%;
-    left: 0%;
-  }
-
-  100% {
-    left: 0;
-    top: 0;
   }
 }
 
